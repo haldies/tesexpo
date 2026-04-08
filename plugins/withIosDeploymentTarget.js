@@ -2,8 +2,6 @@ const { withDangerousMod } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
-// Plugin ini memaksa SEMUA target di Podfile untuk menggunakan iOS 16.0
-// Ini adalah solusi paling ampuh untuk error "only available in iOS 16.0 or newer"
 const withIosDeploymentTarget = (config) => {
   return withDangerousMod(config, [
     'ios',
@@ -12,8 +10,6 @@ const withIosDeploymentTarget = (config) => {
       let content = fs.readFileSync(podfilePath, 'utf8');
 
       const deploymentTarget = '16.0';
-      
-      // Menambahkan hook post_install untuk memaksa versi di setiap target
       if (!content.includes('config.build_settings[\'IPHONEOS_DEPLOYMENT_TARGET\'] = \'' + deploymentTarget + '\'')) {
         const postInstallHook = `
     installer.generated_projects.each do |project|

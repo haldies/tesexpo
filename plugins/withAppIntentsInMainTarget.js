@@ -4,20 +4,17 @@ const path = require('path');
 
 
 const withAppIntentsInMainTarget = (config) => {
-  // Step 1: Salin file Swift ke folder ios/myapp/
+
   config = withDangerousMod(config, [
     'ios',
     async (config) => {
       const projectName = config.modRequest.projectName;
       const projectRoot = config.modRequest.projectRoot;
       
-      // Folder tujuan: ios/myapp/ (main app target)
       const destDir = path.join(projectRoot, 'ios', projectName);
       
-      // File sumber dari modul kita
-      const sourceDir = path.join(projectRoot, 'modules', 'simple-intent', 'ios');
+      const sourceDir = path.join(projectRoot, 'modules', 'simple-intent', 'app-intents');
       
-      // Salin hanya file Intent (bukan Module yang butuh ExpoModulesCore)
       const filesToCopy = ['SimpleIntent.swift'];
       
       for (const file of filesToCopy) {
@@ -35,7 +32,6 @@ const withAppIntentsInMainTarget = (config) => {
 
   const { IOSConfig } = require('@expo/config-plugins');
 
-  // Step 2: Daftarkan file ke Xcode project agar ikut dikompilasi
   config = withXcodeProject(config, async (config) => {
     const xcodeProject = config.modResults;
     const projectName = config.modRequest.projectName;
@@ -45,8 +41,6 @@ const withAppIntentsInMainTarget = (config) => {
     for (const file of filesToAdd) {
       const filePath = `${projectName}/${file}`;
       
-      // Gunakan utility Expo resmi untuk mendaftarkan file secara aman
-      // Hal ini mencegah error "Cannot read properties of null (reading 'path')"
       IOSConfig.XcodeUtils.addBuildSourceFileToGroup({
         filepath: filePath,
         groupName: projectName,
