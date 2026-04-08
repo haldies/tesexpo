@@ -50,7 +50,8 @@
             "deploymentTarget": "16.0"
           }
         }
-      ]
+      ],
+      "./plugins/withIosDeploymentTarget"
     ],
     "experiments": {
       "typedRoutes": true,

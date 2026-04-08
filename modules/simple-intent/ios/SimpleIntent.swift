@@ -1,5 +1,6 @@
 import AppIntents
 
+@available(iOS 16.0, *)
 struct SimpleIntent: AppIntent {
     static var title: LocalizedStringResource = "Tambah To-Do"
     static var description = IntentDescription("Menambahkan tugas baru ke daftar to-do.")
@@ -7,22 +8,14 @@ struct SimpleIntent: AppIntent {
     static var openAppWhenRun: Bool = false
     
     @Parameter(title: "Tugas")
-    var task: String?
+    var name: String // Diganti kembali ke 'name' untuk stabilitas compiler
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> {
-        let taskTitle: String
-        if let input = task {
-            taskTitle = input
-        } else {
-            throw $task.requestValue("Apa yang ingin dikerjakan?")
-        }
-        
-        // Simpan ke UserDefaults agar bisa dibaca oleh aplikasi utama
         let defaults = UserDefaults.standard
         var todos = defaults.stringArray(forKey: "my_todos") ?? []
-        todos.append(taskTitle)
+        todos.append(name)
         defaults.set(todos, forKey: "my_todos")
         
-        return .result(value: "Sip! '\(taskTitle)' sudah masuk daftar.")
+        return .result(value: "Sip! '\(name)' sudah masuk daftar.")
     }
 }
