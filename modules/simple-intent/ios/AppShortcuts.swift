@@ -1,14 +1,14 @@
 import AppIntents
 
 @available(iOS 16.0, *)
-struct SimpleShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
+public struct SimpleShortcuts: AppShortcutsProvider {
+    public static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: SimpleIntent(),
             phrases: [
-                "Tambah tugas \(.name) di \(.applicationName)",
+                "Tambah tugas \(.todoTitle) di \(.applicationName)",
                 "Catat tugas di \(.applicationName)",
-                "Tambah kerjaan \(.name) ke \(.applicationName)"
+                "Tambah kerjaan \(.todoTitle) ke \(.applicationName)"
             ],
             shortTitle: "Tambah To-Do",
             systemImageName: "checklist"

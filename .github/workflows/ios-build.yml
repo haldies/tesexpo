@@ -1,4 +1,4 @@
-name: iOS Build
+name:iOS Build
 
 on:
   workflow_dispatch:
@@ -20,9 +20,6 @@ jobs:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🍏 Setup Xcode version
-        run: xcodebuild -version
-
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -30,13 +27,22 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './package-lock.json'
 
+      - name: 🏗 Setup Expo & EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🛠 Generate Native Code (Prebuild)
-        run: npx expo prebuild --platform ios
+      - name: 🛠 Generate Native Code (Prebuild - No Install)
+        # --no-install agar kita bisa mengontrol proses caching Pods secara mandiri
+        run: npx expo prebuild --platform ios --no-install
 
       - name: 📂 Cache Pods
+        id: cache-pods
         uses: actions/cache@v4
         with:
           path: |
@@ -46,12 +52,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      - name: 🏗 Setup Expo & EAS
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+      - name: 🍏 Install CocoaPods (if no cache)
+        if: steps.cache-pods.outputs.cache-hit != 'true'
+        run: |
+          cd ios
+          pod install
 
       - name: 🛠 Build Local (IPA)
         env:
@@ -61,8 +66,7 @@ jobs:
           EXPO_APPLE_API_KEY: ${{ secrets.EXPO_APPLE_API_KEY }}
         run: |
           PROFILE=${{ github.event.inputs.profile }}
-          echo "Building with profile: $PROFILE"
-          
+          # Skip-dependency-check agar EAS tidak menjalankan install ulang
           eas build \
             --platform ios \
             --profile $PROFILE \

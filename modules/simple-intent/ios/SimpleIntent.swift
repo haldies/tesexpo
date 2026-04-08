@@ -1,21 +1,24 @@
 import AppIntents
 
 @available(iOS 16.0, *)
-struct SimpleIntent: AppIntent {
-    static var title: LocalizedStringResource = "Tambah To-Do"
-    static var description = IntentDescription("Menambahkan tugas baru ke daftar to-do.")
+public struct SimpleIntent: AppIntent {
+    public static var title: LocalizedStringResource = "Tambah To-Do"
+    public static var description = IntentDescription("Menambahkan tugas baru ke daftar to-do.")
 
-    static var openAppWhenRun: Bool = false
+    public static var openAppWhenRun: Bool = false
     
     @Parameter(title: "Tugas")
-    var name: String // Diganti kembali ke 'name' untuk stabilitas compiler
+    public var todoTitle: String
 
-    func perform() async throws -> some IntentResult & ReturnsValue<String> {
+    public init() {}
+
+    public func perform() async throws -> some IntentResult & ReturnsValue<String> {
+        // Simpan ke UserDefaults
         let defaults = UserDefaults.standard
         var todos = defaults.stringArray(forKey: "my_todos") ?? []
-        todos.append(name)
+        todos.append(todoTitle)
         defaults.set(todos, forKey: "my_todos")
         
-        return .result(value: "Sip! '\(name)' sudah masuk daftar.")
+        return .result(value: "Sip! '\(todoTitle)' sudah masuk daftar.")
     }
 }
