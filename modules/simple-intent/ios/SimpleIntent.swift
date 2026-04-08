@@ -1,15 +1,13 @@
 import AppIntents
 
-// SEMUA DALAM SATU FILE UNTUK MENGHINDARI ERROR METADATA
 @available(iOS 16.0, *)
 public struct SimpleIntent: AppIntent {
     public static var title: LocalizedStringResource = "Tambah To-Do"
     public static var description = IntentDescription("Menambahkan tugas baru ke daftar to-do.")
-
     public static var openAppWhenRun: Bool = false
     
     @Parameter(title: "Tugas")
-    public var todoText: String // Menggunakan nama yang sangat jelas
+    public var todoText: String
 
     public init() {}
 
@@ -18,8 +16,7 @@ public struct SimpleIntent: AppIntent {
         var todos = defaults.stringArray(forKey: "my_todos") ?? []
         todos.append(todoText)
         defaults.set(todos, forKey: "my_todos")
-        
-        return .result(value: "Sip! '\(todoText)' sudah masuk daftar.")
+        return .result(value: "'\(todoText)' sudah masuk daftar!")
     }
 }
 
@@ -28,10 +25,12 @@ public struct SimpleShortcuts: AppShortcutsProvider {
     public static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: SimpleIntent(),
+            // ❌ JANGAN pakai \(.todoText) di sini - tidak bisa dibaca dari Pod
+            // ✅ Biarkan iOS yang otomatis minta input
             phrases: [
-                "Tambah tugas \(.todoText) di \(.applicationName)",
+                "Tambah tugas di \(.applicationName)",
                 "Catat tugas di \(.applicationName)",
-                "Tambah kerjaan \(.todoText) ke \(.applicationName)"
+                "Tambah kerjaan ke \(.applicationName)"
             ],
             shortTitle: "Tambah To-Do",
             systemImageName: "checklist"
