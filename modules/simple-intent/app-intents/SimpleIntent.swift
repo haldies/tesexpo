@@ -23,11 +23,10 @@ struct TodoShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: AddTodoIntent(),
-            // Sekarang \(.todoText) BISA dipakai karena kode ada di main target
             phrases: [
-                "Tambah tugas \(.todoText) di \(.applicationName)",
+                "Tambah tugas \(.$todoText) di \(.applicationName)",
                 "Catat tugas di \(.applicationName)",
-                "Tambah kerjaan \(.todoText) ke \(.applicationName)"
+                "Tambah kerjaan \(.$todoText) ke \(.applicationName)"
             ],
             shortTitle: "Tambah To-Do",
             systemImageName: "checklist"
