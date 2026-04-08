@@ -2,11 +2,7 @@ const { withDangerousMod, withXcodeProject } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Plugin ini menyalin file Swift App Intents langsung ke dalam
- * MAIN APP TARGET (bukan Pod), sehingga parameter token seperti
- * \(.todoText) bisa berjalan dengan benar.
- */
+
 const withAppIntentsInMainTarget = (config) => {
   // Step 1: Salin file Swift ke folder ios/myapp/
   config = withDangerousMod(config, [
@@ -37,6 +33,8 @@ const withAppIntentsInMainTarget = (config) => {
     },
   ]);
 
+  const { IOSConfig } = require('@expo/config-plugins');
+
   // Step 2: Daftarkan file ke Xcode project agar ikut dikompilasi
   config = withXcodeProject(config, async (config) => {
     const xcodeProject = config.modResults;
@@ -45,15 +43,17 @@ const withAppIntentsInMainTarget = (config) => {
     const filesToAdd = ['SimpleIntent.swift'];
     
     for (const file of filesToAdd) {
-      // Cek apakah sudah terdaftar
-      const alreadyExists = xcodeProject.hasFile(`${projectName}/${file}`);
-      if (!alreadyExists) {
-        xcodeProject.addSourceFile(
-          `${projectName}/${file}`,
-          { target: xcodeProject.getFirstTarget().uuid }
-        );
-        console.log(`[AppIntents Plugin] Registered ${file} in Xcode project`);
-      }
+      const filePath = `${projectName}/${file}`;
+      
+      // Gunakan utility Expo resmi untuk mendaftarkan file secara aman
+      // Hal ini mencegah error "Cannot read properties of null (reading 'path')"
+      IOSConfig.XcodeUtils.addBuildSourceFileToGroup({
+        filepath: filePath,
+        groupName: projectName,
+        project: xcodeProject,
+      });
+      
+      console.log(`[AppIntents Plugin] Registered ${file} in Xcode project using Expo utils`);
     }
     
     return config;
