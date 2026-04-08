@@ -63,7 +63,7 @@ jobs:
           PROFILE=${{ github.event.inputs.profile }}
           echo "Building with profile: $PROFILE"
           
-          npx eas build \
+          eas build \
             --platform ios \
             --profile $PROFILE \
             --local \
