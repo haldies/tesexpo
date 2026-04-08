@@ -51,7 +51,8 @@
           }
         }
       ],
-      "./plugins/withIosDeploymentTarget"
+      "./plugins/withIosDeploymentTarget",
+      "./plugins/withAppIntentsInMainTarget"
     ],
     "experiments": {
       "typedRoutes": true,

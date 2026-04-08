@@ -1,17 +1,15 @@
 import AppIntents
 
 @available(iOS 16.0, *)
-public struct SimpleIntent: AppIntent {
-    public static var title: LocalizedStringResource = "Tambah To-Do"
-    public static var description = IntentDescription("Menambahkan tugas baru ke daftar to-do.")
-    public static var openAppWhenRun: Bool = false
+struct AddTodoIntent: AppIntent {
+    static var title: LocalizedStringResource = "Tambah To-Do"
+    static var description = IntentDescription("Menambahkan tugas baru ke daftar to-do.")
+    static var openAppWhenRun: Bool = false
     
-    @Parameter(title: "Tugas")
-    public var todoText: String
+    @Parameter(title: "Nama Tugas")
+    var todoText: String
 
-    public init() {}
-
-    public func perform() async throws -> some IntentResult & ReturnsValue<String> {
+    func perform() async throws -> some IntentResult & ReturnsValue<String> {
         let defaults = UserDefaults.standard
         var todos = defaults.stringArray(forKey: "my_todos") ?? []
         todos.append(todoText)
@@ -21,16 +19,15 @@ public struct SimpleIntent: AppIntent {
 }
 
 @available(iOS 16.0, *)
-public struct SimpleShortcuts: AppShortcutsProvider {
-    public static var appShortcuts: [AppShortcut] {
+struct TodoShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
         AppShortcut(
-            intent: SimpleIntent(),
-            // ❌ JANGAN pakai \(.todoText) di sini - tidak bisa dibaca dari Pod
-            // ✅ Biarkan iOS yang otomatis minta input
+            intent: AddTodoIntent(),
+            // Sekarang \(.todoText) BISA dipakai karena kode ada di main target
             phrases: [
-                "Tambah tugas di \(.applicationName)",
+                "Tambah tugas \(.todoText) di \(.applicationName)",
                 "Catat tugas di \(.applicationName)",
-                "Tambah kerjaan ke \(.applicationName)"
+                "Tambah kerjaan \(.todoText) ke \(.applicationName)"
             ],
             shortTitle: "Tambah To-Do",
             systemImageName: "checklist"
